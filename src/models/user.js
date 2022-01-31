@@ -37,6 +37,7 @@ const userSchema = new Mongoose.Schema({
   },
 });
 
+/** Middleware */
 userSchema.pre("save", async function (next) {
   const user = this;
 
