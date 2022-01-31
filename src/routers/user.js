@@ -21,7 +21,7 @@ router.post("/users/login", async (req, res) => {
 });
 
 /**
- * CREATE USER
+ * SIGN UP
  * */
 router.post("/users", async (req, res) => {
   const user = new User(req.body);
