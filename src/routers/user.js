@@ -4,6 +4,23 @@ const User = require("../models/user");
 const router = new express.Router();
 
 /**
+ * LOGIN
+ * */
+router.post("/users/login", async (req, res) => {
+  try {
+    const user = await User.findByCredentials(
+      req.body.email,
+      req.body.password
+    );
+    console.log(user)
+
+    res.send(user);
+  } catch (e) {
+    res.status(400).send();
+  }
+});
+
+/**
  * CREATE USER
  * */
 router.post("/users", async (req, res) => {
@@ -63,7 +80,7 @@ router.patch("/users/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
 
-    updates.forEach((update) => user[update] = req.body[update])
+    updates.forEach((update) => (user[update] = req.body[update]));
     await user.save();
 
     if (!user) {
