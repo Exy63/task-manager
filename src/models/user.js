@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true },
@@ -36,11 +37,36 @@ const userSchema = new mongoose.Schema({
       }
     },
   },
+  tokens: [
+    {
+      token: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
 });
 
-/** 
- * Middleware 
+/**
+ * Middleware
  */
+// Create Auth Token
+userSchema.methods.generateAuthToken = async function () {
+  const user = this;
+
+  // creating token
+  const token = jwt.sign(
+    { _id: user._id.toString() },
+    "TaskManagerAppSecretKey"
+  );
+
+  // saving token to database
+  user.tokens = user.tokens.concat({ token });
+  await user.save();
+
+  return token;
+};
+
 // Login user
 userSchema.statics.findByCredentials = async (email, password) => {
   const user = await User.findOne({ email });
@@ -53,7 +79,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
     throw new Error("Unable to login.");
   }
 
-  return user
+  return user;
 };
 
 // Hash the plain text password before saving
