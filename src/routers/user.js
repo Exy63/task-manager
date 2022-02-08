@@ -76,26 +76,9 @@ router.get("/users/me", auth, async (req, res) => {
 });
 
 /**
- * GET USER BY ID
- */
-router.get("/users/:id", async (req, res) => {
-  const id = req.params.id;
-
-  try {
-    const user = await User.findById(id);
-    if (!user) {
-      res.status(404).send();
-    }
-    res.send(user);
-  } catch (e) {
-    res.status(500).send(e);
-  }
-});
-
-/**
  * UPDATE USER
  */
-router.patch("/users/:id", async (req, res) => {
+router.patch("/users/me", auth, async (req, res) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = ["name", "email", "password", "age"];
   const isValidOperation = updates.every((update) =>
@@ -107,15 +90,12 @@ router.patch("/users/:id", async (req, res) => {
   }
 
   try {
-    const user = await User.findById(req.params.id);
+    const user = req.user;
 
     updates.forEach((update) => (user[update] = req.body[update]));
     await user.save();
 
-    if (!user) {
-      res.status(404).send();
-    }
-    res.status(200).send(user);
+    res.send(user);
   } catch (e) {
     res.status(400).send(e);
   }
@@ -124,16 +104,11 @@ router.patch("/users/:id", async (req, res) => {
 /**
  * DELETE USER
  */
-router.delete("/users/:id", async (req, res) => {
-  const id = req.params.id;
+router.delete("/users/me", auth, async (req, res) => {
   try {
-    const user = await User.findByIdAndDelete(id);
+    await req.user.remove()
 
-    if (!user) {
-      res.status(404).send({ error: "User not found" });
-    }
-
-    res.status(200).send(user);
+    res.send(req.user);
   } catch (e) {
     res.status(500).send(e);
   }
