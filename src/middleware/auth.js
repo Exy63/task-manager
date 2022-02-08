@@ -17,6 +17,7 @@ const auth = async (req, res, next) => {
 
     if (!user) throw new Error();
 
+    req.token = token;
     // Injecting user info to request
     req.user = user;
 

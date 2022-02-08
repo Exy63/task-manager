@@ -5,14 +5,10 @@ require("./db/mongoose");
 const userRouter = require("./routers/user");
 // Task
 const taskRouter = require("./routers/task");
-// // Auth
-// const auth = require("./middleware/auth");
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// // Middleware
-// app.use(auth);
 
 app.use(express.json());
 // Routers
