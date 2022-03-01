@@ -2,6 +2,8 @@ const express = require("express");
 const User = require("../models/user");
 const auth = require("../middleware/auth");
 const router = new express.Router();
+const multer = require("multer");
+
 
 /**
  * REGISTER
@@ -79,32 +81,28 @@ router.get("/users/me", auth, async (req, res) => {
 /**
  * UPDATE USER
  */
-router.patch(
-  "/users/me",
-  auth,
-  async (req, res) => {
-    const updates = Object.keys(req.body);
-    const allowedUpdates = ["name", "email", "password", "age"];
-    const isValidOperation = updates.every((update) =>
-      allowedUpdates.includes(update)
-    );
+router.patch("/users/me", auth, async (req, res) => {
+  const updates = Object.keys(req.body);
+  const allowedUpdates = ["name", "email", "password", "age"];
+  const isValidOperation = updates.every((update) =>
+    allowedUpdates.includes(update)
+  );
 
-    if (!isValidOperation) {
-      return res.status(400).send({ error: "Invalid updates!" });
-    }
-
-    try {
-      const user = req.user;
-
-      updates.forEach((update) => (user[update] = req.body[update]));
-      await user.save();
-
-      res.send(user);
-    } catch (e) {
-      res.status(400).send(e);
-    }
+  if (!isValidOperation) {
+    return res.status(400).send({ error: "Invalid updates!" });
   }
-);
+
+  try {
+    const user = req.user;
+
+    updates.forEach((update) => (user[update] = req.body[update]));
+    await user.save();
+
+    res.send(user);
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
 
 /**
  * DELETE USER
@@ -116,6 +114,21 @@ router.delete("/users/me", auth, async (req, res) => {
     res.send(req.user);
   } catch (e) {
     res.status(500).send(e);
+  }
+});
+
+const upload = multer({
+  dest: "avatars",
+});
+
+/**
+ * UPLOAD AVATAR
+ */
+router.post("/users/me/avatar", upload.single("avatar"), async (req, res) => {
+  try {
+    res.send();
+  } catch (e) {
+    res.send(e);
   }
 });
 
