@@ -42,7 +42,9 @@ router.post("/users/login", async (req, res) => {
  */
 router.post("/users/logout", auth, async (req, res) => {
   try {
-    req.user.tokens = req.user.tokens.filter(token => token.token !== req.token);
+    req.user.tokens = req.user.tokens.filter(
+      (token) => token.token !== req.token
+    );
 
     await req.user.save();
 
@@ -55,9 +57,9 @@ router.post("/users/logout", auth, async (req, res) => {
 /**
  * LOG OUT ALL
  */
- router.post("/users/logoutAll", auth, async (req, res) => {
+router.post("/users/logoutAll", auth, async (req, res) => {
   try {
-    req.user.tokens = []
+    req.user.tokens = [];
 
     await req.user.save();
 
@@ -66,7 +68,6 @@ router.post("/users/logout", auth, async (req, res) => {
     res.status(500).send(e);
   }
 });
-
 
 /**
  * READ PROFILE
@@ -78,35 +79,39 @@ router.get("/users/me", auth, async (req, res) => {
 /**
  * UPDATE USER
  */
-router.patch("/users/me", auth, async (req, res) => {
-  const updates = Object.keys(req.body);
-  const allowedUpdates = ["name", "email", "password", "age"];
-  const isValidOperation = updates.every((update) =>
-    allowedUpdates.includes(update)
-  );
+router.patch(
+  "/users/me",
+  auth,
+  async (req, res) => {
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ["name", "email", "password", "age"];
+    const isValidOperation = updates.every((update) =>
+      allowedUpdates.includes(update)
+    );
 
-  if (!isValidOperation) {
-    return res.status(400).send({ error: "Invalid updates!" });
+    if (!isValidOperation) {
+      return res.status(400).send({ error: "Invalid updates!" });
+    }
+
+    try {
+      const user = req.user;
+
+      updates.forEach((update) => (user[update] = req.body[update]));
+      await user.save();
+
+      res.send(user);
+    } catch (e) {
+      res.status(400).send(e);
+    }
   }
-
-  try {
-    const user = req.user;
-
-    updates.forEach((update) => (user[update] = req.body[update]));
-    await user.save();
-
-    res.send(user);
-  } catch (e) {
-    res.status(400).send(e);
-  }
-});
+);
 
 /**
  * DELETE USER
  */
 router.delete("/users/me", auth, async (req, res) => {
   try {
-    await req.user.remove()
+    await req.user.remove();
 
     res.send(req.user);
   } catch (e) {
