@@ -12,6 +12,17 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+/** Send email to user */
+const emailUser = function (options) {
+  transporter.sendMail(options, (err, info) => {
+    if (err) {
+      return console.log(err);
+    }
+
+    console.log("Sent: " + info.response);
+  });
+};
+
 /** Send welcome email to user */
 const sendWelcomeEmail = function (userEmail, userName) {
   const options = {
@@ -21,13 +32,7 @@ const sendWelcomeEmail = function (userEmail, userName) {
     text: `Welcome to the app, ${userName}. Let me know how you get along with the app.`,
   };
 
-  transporter.sendMail(options, (err, info) => {
-    if (err) {
-      return console.log(err);
-    }
-
-    console.log("Sent: " + info.response);
-  });
+  emailUser(options);
 };
 
 /** Send cancelation email to user */
@@ -39,13 +44,7 @@ const sendCancelationEmail = function (userEmail, userName) {
     text: `Goodbye, ${userName}. I hope to see you back sometime soon.`,
   };
 
-  transporter.sendMail(options, (err, info) => {
-    if (err) {
-      return console.log(err);
-    }
-
-    console.log("Sent: " + info.response);
-  });
+  emailUser(options);
 };
 
 module.exports = { sendWelcomeEmail, sendCancelationEmail };
