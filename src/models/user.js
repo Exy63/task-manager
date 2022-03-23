@@ -85,10 +85,7 @@ userSchema.methods.generateAuthToken = async function () {
   const user = this;
 
   // creating token
-  const token = jwt.sign(
-    { _id: user._id.toString() },
-    "TaskManagerAppSecretKey"
-  );
+  const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET);
 
   // saving token to database
   user.tokens = user.tokens.concat({ token });
