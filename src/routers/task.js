@@ -28,7 +28,6 @@ router.get("/tasks", auth, async (req, res) => {
 
   const limit = parseInt(req.query.limit) || 2;
   const skip = parseInt(req.query.skip) * limit || 0;
-  // parseInt(req.query.skip)
 
   if (req.query.completed) {
     match.completed = req.query.completed === "true";
