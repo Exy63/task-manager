@@ -63,7 +63,7 @@ router.get("/tasks/:id", auth, async (req, res) => {
     const task = await Task.findOne({ _id: id, owner: req.user._id });
 
     if (!task) {
-      res.status(404).send();
+      return res.status(404).send();
     }
     res.send(task);
   } catch (e) {
@@ -82,7 +82,7 @@ router.patch("/tasks/:id", auth, async (req, res) => {
   );
 
   if (!isValidOperation) {
-    res.status(400).send({ error: "Invalid updates!" });
+    return res.status(400).send({ error: "Invalid updates!" });
   }
 
   try {
@@ -92,7 +92,7 @@ router.patch("/tasks/:id", auth, async (req, res) => {
     });
 
     if (!task) {
-      res.status(404).send();
+      return res.status(404).send();
     }
 
     updates.forEach((update) => (task[update] = req.body[update]));
@@ -113,7 +113,7 @@ router.delete("/tasks/:id", auth, async (req, res) => {
     const task = await Task.findOneAndDelete({ _id: id, owner: req.user._id });
 
     if (!task) {
-      res.status(404).send({ error: "Task not found" });
+      return res.status(404).send({ error: "Task not found" });
     }
 
     res.status(200).send(task);
