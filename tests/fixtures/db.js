@@ -60,4 +60,12 @@ const setupDatabase = async () => {
   await new Task(taskThree).save();
 };
 
-module.exports = { userOneId, userOne, userTwo, taskOne, setupDatabase };
+module.exports = {
+  userOneId,
+  userOne,
+  userTwo,
+  taskOne,
+  taskTwo,
+  taskThree,
+  setupDatabase,
+};
