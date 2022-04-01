@@ -6,7 +6,7 @@ const { userOneId, userOne, setupDatabase } = require("./fixtures/db");
 beforeEach(setupDatabase);
 
 test("Should signup a new user", async () => {
-  const response = await request(app)
+  const res = await request(app)
     .post("/users")
     .send({
       name: "Sofya",
@@ -16,11 +16,11 @@ test("Should signup a new user", async () => {
     .expect(201);
 
   // Assert that the database was changed correctly
-  const user = await User.findById(response.body.user._id);
+  const user = await User.findById(res.body.user._id);
   expect(user).not.toBeNull();
 
   // Assert about the response
-  expect(response.body).toMatchObject({
+  expect(res.body).toMatchObject({
     user: {
       name: "Sofya",
       email: "sofya@mail.com",
@@ -33,7 +33,7 @@ test("Should signup a new user", async () => {
 });
 
 test("Should login existing user", async () => {
-  const response = await request(app)
+  const res = await request(app)
     .post("/users/login")
     .send({ email: userOne.email, password: userOne.password })
     .expect(200);
@@ -41,7 +41,7 @@ test("Should login existing user", async () => {
   const user = await User.findById(userOneId);
 
   // Assert that token in response matches users second token
-  expect(response.body.token).toBe(user.tokens[1].token);
+  expect(res.body.token).toBe(user.tokens[1].token);
 });
 
 test("Should not login nonexistent user", async () => {
@@ -64,7 +64,7 @@ test("Should not get profile for unauthenticated user", async () => {
 });
 
 test("Should delete account for user", async () => {
-  const response = await request(app)
+  await request(app)
     .delete("/users/me")
     .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
     .send()
