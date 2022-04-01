@@ -111,3 +111,60 @@ test("Should not update invalid user fields", async () => {
     .send({ location: "Calgary" })
     .expect(400);
 });
+
+test("Should not signup user with invalid name/email/password", async () => {
+  await request(app)
+    .post("/users")
+    .send({
+      name: ["Wrong", "Name"],
+      email: "niceemail@mail.com",
+      password: "goodPass22890",
+    })
+    .expect(400);
+
+  await request(app)
+    .post("/users")
+    .send({
+      name: "Anthony",
+      email: "wrong-email!",
+      password: "nicePass3310",
+    })
+    .expect(400);
+
+  await request(app)
+    .post("/users")
+    .send({
+      name: "David",
+      email: "betteremail@mail.com",
+      password: "bad-password",
+    })
+    .expect(400);
+});
+
+test("Should not update user if unauthenticated", async () => {
+  await request(app).patch("/users/me").send({ name: "Linn" }).expect(401);
+});
+
+test("Should not update user with invalid name/email/password", async () => {
+  await request(app)
+    .patch("/users/me")
+    .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+    .send({ name: { wrong: "name" } })
+    .expect(400);
+
+  await request(app)
+    .patch("/users/me")
+    .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+    .send({ email: 404 })
+    .expect(400);
+
+  await request(app)
+    .patch("/users/me")
+    .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+    .send({ password: "password" })
+    .expect(400);
+});
+
+test(" Should not delete user if unauthenticated", async () => {
+  await request(app).delete("/users/me").send().expect(401);
+});
